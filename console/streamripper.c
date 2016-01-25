@@ -293,6 +293,7 @@ print_usage (FILE* stream)
     fprintf(stream, "      -M megabytes   - Stop ripping after this many megabytes\n");
     fprintf(stream, "      -q [start]     - Add sequence number to output file\n");
     fprintf(stream, "      -u useragent   - Use a different UserAgent than \"Streamripper\"\n");
+    fprintf(stream, "      -f referer     - Use a different Referer than \"http://google.com\"\n");
     fprintf(stream, "      -w rulefile    - Parse metadata using rules in file.\n");
     fprintf(stream, "      -m timeout     - Number of seconds before force-closing stalled conn\n");
     fprintf(stream, "      -k count       - Leave <count> tracks in incomplete\n");
@@ -389,11 +390,6 @@ parse_arguments (STREAM_PREFS* prefs, int argc, char **argv)
 	    i++;
 	    strncpy(prefs->ext_cmd, argv[i], SR_MAX_PATH);
 	    break;
-	case 'f':
-	    i++;
-	    fprintf (stderr, "Error: -f dropstring option is obsolete. "
-		     "Please use -w parse_rules instead.\n");
-	    exit (1);
 	case 'h':
 	case '?':
 	    print_usage (stdout);
@@ -481,10 +477,14 @@ parse_arguments (STREAM_PREFS* prefs, int argc, char **argv)
 	case 'T':
 	    OPT_FLAG_SET(prefs->flags, OPT_TRUNCATE_DUPS, 1);
 	    break;
-	case 'u':
-	    i++;
-	    strncpy(prefs->useragent, argv[i], MAX_USERAGENT_STR);
-	    break;
+    case 'u':
+        i++;
+        strncpy(prefs->useragent, argv[i], MAX_USERAGENT_STR);
+        break;
+    case 'f':
+        i++;
+        strncpy(prefs->referer, argv[i], MAX_REFERER_STR);
+        break;
 	case 'v':
 	    printf("Streamripper %s\n", SRVERSION);
 	    exit(0);

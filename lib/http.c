@@ -54,7 +54,7 @@ http_parse_url(const char *url, URLINFO *urlinfo);
 error_code
 http_sc_connect (RIP_MANAGER_INFO* rmi,
 		 HSOCKET *sock, const char *url, const char *proxyurl, 
-		 SR_HTTP_HEADER *info, char *useragent, char *if_name)
+		 SR_HTTP_HEADER *info, char *useragent, char *referer, char *if_name)
 {
     char headbuf[MAX_HEADER_LEN];
     URLINFO url_info;
@@ -85,7 +85,7 @@ http_sc_connect (RIP_MANAGER_INFO* rmi,
 	}
 
 	debug_printf("http_sc_connect(): calling http_construct_sc_request\n");
-	ret = http_construct_sc_request (url, proxyurl, headbuf, useragent);
+	ret = http_construct_sc_request (url, proxyurl, headbuf, useragent, referer);
 	if (ret != SR_SUCCESS) {
 	    return ret;
 	}
@@ -105,7 +105,7 @@ http_sc_connect (RIP_MANAGER_INFO* rmi,
 	    debug_printf ("Redirecting: %s\n", info->http_location);
 	    url = info->http_location;
 	    return http_sc_connect (rmi, sock, info->http_location, 
-				    proxyurl, info, useragent, if_name);
+				    proxyurl, info, useragent, referer, if_name);
 	} else {
 	    break;
 	}
@@ -196,7 +196,7 @@ http_parse_url(const char *url, URLINFO *urlinfo)
 }
 
 error_code
-http_construct_sc_request(const char *url, const char* proxyurl, char *buffer, char *useragent)
+http_construct_sc_request(const char *url, const char* proxyurl, char *buffer, char *useragent, char *referer)
 {
     int ret;
     URLINFO ui;
@@ -218,12 +218,14 @@ http_construct_sc_request(const char *url, const char* proxyurl, char *buffer, c
     snprintf(buffer, MAX_HEADER_LEN + MAX_HOST_LEN + SR_MAX_PATH,
 	     "GET %s HTTP/1.0\r\n"
 	     "Host: %s:%d\r\n"
-	     "User-Agent: %s\r\n"
+         "User-Agent: %s\r\n"
+         "Referer: %s\r\n"
 	     "Icy-MetaData:1\r\n", 
 	     myurl, 
 	     ui.host, 
 	     ui.port, 
-	     useragent[0] ? useragent : "Streamripper/1.x");
+	     useragent[0] ? useragent : "Streamripper/1.x",
+         referer[0] ? referer : "http://google.com");
 #endif
 
     /* This is the header suggested Florian Stoehr */
@@ -232,11 +234,13 @@ http_construct_sc_request(const char *url, const char* proxyurl, char *buffer, c
 	     "Accept: */*\r\n"
 	     "Cache-Control: no-cache\r\n"
 	     "User-Agent: %s\r\n"
+         "Referer: %s\r\n"
 	     "Icy-Metadata: 1\r\n"
 	     "Connection: close\r\n"
 	     "Host: %s:%d\r\n",
 	     myurl,
 	     useragent[0] ? useragent: "Streamripper/1.x",
+         referer[0] ? referer : "http://google.com",
 	     ui.host,
 	     ui.port);
 
@@ -316,6 +320,7 @@ http_construct_page_request (const char *url, BOOL proxyformat, char *buffer)
 		"Accept-Language: en-us\r\n"
 		"Accept-Encoding: gzip, deflate\r\n"
 		"User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)\r\n"
+        "Referer: http://google.com\r\n"
 		"Connection: Keep-Alive\r\n\r\n", 
 		myurl, 
 		ui.host, 

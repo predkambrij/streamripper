@@ -504,7 +504,7 @@ start_ripping (RIP_MANAGER_INFO* rmi)
     /* Connect to the stream */
     ret = http_sc_connect (rmi, &rmi->stream_sock, prefs->url, 
 			   pproxy, &rmi->http_info, 
-			   prefs->useragent, prefs->if_name);
+			   prefs->useragent, prefs->referer, prefs->if_name);
     if (ret != SR_SUCCESS) {
 	debug_printf ("http_sc_connect() returned error\n");
 	goto RETURN_ERR;

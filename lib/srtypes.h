@@ -94,7 +94,8 @@ typedef unsigned int uint32_t;
 #define MAX_TRACK_LEN		SR_MAX_PATH /* GCS - be careful here... */
 #define MAX_URI_STRING		1024
 #define MAX_ERROR_STR           (4096)
-#define MAX_USERAGENT_STR	1024
+#define MAX_USERAGENT_STR   1024
+#define MAX_REFERER_STR   1024
 #define MAX_AUTH_LEN            255
 //#define MAX_DROPSTRING_LEN      255
 
@@ -453,7 +454,8 @@ struct stream_prefs
     char relay_ip[SR_MAX_PATH];		// optional, ip to bind relaying 
                                         //  socket to
     char ext_cmd[SR_MAX_PATH];          // cmd to spawn for external metadata
-    char useragent[MAX_USERAGENT_STR];	// optional, use a different useragent
+    char useragent[MAX_USERAGENT_STR];  // optional, use a different useragent
+    char referer[MAX_REFERER_STR];  // optional, use a different useragent
     u_short relay_port;			// port to use for the relay server
 					//  GCS 3/30/07 change to u_short
     u_short max_port;			// highest port the relay server 
